@@ -42,7 +42,7 @@ If Len(sText) > 0 Then 'if blank do nothing return the blank value
     End If
     
     sRegion = "eastus"
-    sAuthenticationKey = "7d53c79bfbf044339712e46c579fae96" 'authentication Key from subscription, used on 09Dec, @outlook.com
+    sAuthenticationKey = "##############" 'authentication Key from subscription, used on 09Dec, @outlook.com
     
     If Len(sAuthenticationKey) < 10 Then
     sAuthenticationKey = InputBox("Please input Authentication Code", "Input Authentication Code")
