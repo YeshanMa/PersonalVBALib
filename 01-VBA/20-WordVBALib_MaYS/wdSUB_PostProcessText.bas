@@ -5,7 +5,7 @@ Sub PostProcessText()
 Dim rngSelectedRange As Range
 Set rngSelectedRange = Selection.Range
 
-If rngSelectedRange Is Nothing Then
+If rngSelectedRange = "" Then
     Set rngSelectedRange = ActiveDocument.Range
     rngSelectedRange.Select
 End If

@@ -3,6 +3,7 @@ Sub DuplicateParagraphsGray()
 'This Macro is to Find the Duplicate Paragraphs Throughout the Entire Word Document.
 'Reference to below which highlight the Duplicated Paragraph.
 'https://www.extendoffice.com/documents/word/5450-word-find-duplicate-sentences.html
+'https://stackoverflow.com/questions/33562468/duplicate-removal-for-vba-word-not-working-effectively
 
 ' I had a very long document to process, the code above would take at least 100 days to finish and blocked everything
 ' while working at it. The main culprit is the "Set xRng = .Paragraphs(J).Range" which is very slow. I did an alternative
