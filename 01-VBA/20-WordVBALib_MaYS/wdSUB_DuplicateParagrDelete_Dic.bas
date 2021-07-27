@@ -44,10 +44,5 @@ Sub DeleteDuplicateParagraphs()
   'MsgBox "This code ran successfully in " & Round(Timer - StartTime, 2) & " seconds", vbInformation
 
 Call PostProcessText
-
-
-    
     
 End Sub
-
-

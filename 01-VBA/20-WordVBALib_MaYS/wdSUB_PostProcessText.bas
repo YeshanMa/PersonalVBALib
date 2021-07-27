@@ -3,11 +3,15 @@ Sub PostProcessText()
 'This macro is to Process the Text for easy reading, e.g. remove multiple or Consecutive Line Breakers
 
 Dim rngSelectedRange As Range
+
 Set rngSelectedRange = Selection.Range
 
+
 If rngSelectedRange = "" Then
+
     Set rngSelectedRange = ActiveDocument.Range
     rngSelectedRange.Select
+
 End If
 
 Debug.Print rngSelectedRange.Text
@@ -21,20 +25,23 @@ Debug.Print rngSelectedRange.Text
 'https://social.msdn.microsoft.com/Forums/office/en-US/b24911b8-071f-4c7e-8cfc-a8b82fecc435/vba-findreplaceexecute-loops-when-replacing-multiple-paragraph-marks
 
 
+
 '----Clean Consecutive Tabs into One Line Break----
 With Selection.Find
 
     .ClearFormatting
 
     .Text = "[^t]{1,}"                 'MatchWildcards must be Enabled to True when use RE
-    .Replacement.Text = "^p^p"
-
+    .Replacement.Text = "^p"
     .MatchWildcards = True          'MatchWildcards must be Enabled to True when use RE
 
     .Forward = False
+
+
     .Format = False
     .MatchCase = False
     .MatchWholeWord = False
+
     .MatchSoundsLike = False
     .MatchAllWordForms = False
 
@@ -52,13 +59,41 @@ With Selection.Find
     .ClearFormatting
 
     .Text = " {3,}"                 'MatchWildcards must be Enabled to True when use RE
-    .Replacement.Text = " "
-
+    .Replacement.Text = ""
     .MatchWildcards = True          'MatchWildcards must be Enabled to True when use RE
+
     .Forward = False
+
     .Format = False
     .MatchCase = False
     .MatchWholeWord = False
+
+    .MatchSoundsLike = False
+    .MatchAllWordForms = False
+
+    '.Wrap = wdFindContinue         '.Wrap = wdFindContinue shall be disabled for only Replace in Selected Range
+
+End With
+
+Selection.Find.Execute Replace:=wdReplaceAll
+''-----------------------------------------
+
+
+'----Clean Consecutive (> 3) White Spaces----
+With Selection.Find
+
+    .ClearFormatting
+
+    .Text = " {2,}"                 'MatchWildcards must be Enabled to True when use RE
+    .Replacement.Text = " "
+    .MatchWildcards = True          'MatchWildcards must be Enabled to True when use RE
+
+    .Forward = False
+
+    .Format = False
+    .MatchCase = False
+    .MatchWholeWord = False
+
     .MatchSoundsLike = False
     .MatchAllWordForms = False
 
@@ -76,14 +111,16 @@ With Selection.Find
     .ClearFormatting
 
     .Text = " {1,}^13"             '^p cannot be recognized, use ^13 as alternative
-    .Replacement.Text = "^p"
 
+    .Replacement.Text = "^p"
     .MatchWildcards = True          'MatchWildcards must be Enabled to True when use RE
 
     .Forward = False
+
     .Format = False
     .MatchCase = False
     .MatchWholeWord = False
+
     .MatchSoundsLike = False
     .MatchAllWordForms = False
 
@@ -93,6 +130,7 @@ With Selection.Find
 End With
 Selection.Find.Execute Replace:=wdReplaceAll
 ''-----------------------------------------
+
 
 ''----Replace Consecutive (> 3) Line Breakers with RE----
 With Selection.Find
@@ -100,14 +138,16 @@ With Selection.Find
     .ClearFormatting
 
     .Text = "[^13]{2,}"             '^p cannot be recognized, use ^13 as alternative
-    .Replacement.Text = "^p^p"
 
+    .Replacement.Text = "^p^p"
     .MatchWildcards = True          'MatchWildcards must be Enabled to True when use RE
 
     .Forward = False
+
     .Format = False
     .MatchCase = False
     .MatchWholeWord = False
+
     .MatchSoundsLike = False
     .MatchAllWordForms = False
 
@@ -116,6 +156,8 @@ With Selection.Find
 End With
 Selection.Find.Execute Replace:=wdReplaceAll
 ''-----------------------------------------
+
+
 With ActiveDocument.Paragraphs
 
 .SpaceBefore = 0
