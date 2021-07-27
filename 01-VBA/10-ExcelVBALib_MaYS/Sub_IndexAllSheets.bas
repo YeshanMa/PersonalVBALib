@@ -3,7 +3,17 @@ Public RowLast As Long
 Public ColLast As Long
 
 Public Sub IndexAllSheets()
-'https://www.thesmallman.com/blog/2020/4/16/list-all-sheets-in-a-excel-workbook
+' Macro to list the Index of All sheets in this Excel Workbook, by MaYS.
+
+' Ver 1.1, 27-Jul-2021
+' Add Indicator of If the Workbook is empty on the Index Sheet
+' Fix errors when add Link when the A1 content is Number
+
+' Ver 1.0, 14-Dec-2020
+' 1st Version
+' https://www.thesmallman.com/blog/2020/4/16/list-all-sheets-in-a-excel-workbook
+
+
 '---------------------------------------------
 'Define Variables for how many sheets in the Workbook
 
@@ -24,9 +34,22 @@ Const strIndexSheetName As String = "Index_All_Sheets"
 Dim shtEachSheet As Worksheet
 Dim bIfSheetProtected As Boolean
 Dim bIfSheetHided As Boolean
+Dim bIfSheetEmpty As Boolean
 
 bIfSheetProtected = False
 bIfSheetHided = False
+bIfSheetEmpty = False
+
+Const COL_NR As Integer = 1
+Const COL_SHEET_NAME As Integer = 2
+Const COL_SHEET_LINK As Integer = 3
+Const COL_SHEET_EMPTY As Integer = 4
+Const COL_SHEET_LOCKED As Integer = 5
+Const COL_SHEET_HIDDEN As Integer = 6
+Const COL_RESERVED_01 As Integer = 7
+Const COL_RESERVED_02 As Integer = 8
+Const COL_COMMENTS As Integer = 9
+
 '---------------------------------------------
 'Start of Procedure
 
@@ -47,16 +70,17 @@ End If
     shtIndexofAllSheets.Move Before:=Sheets(1)
     Cells.Clear
 
-    Cells(1, 1).Value = "Nr."
-    Cells(1, 2).Value = "Index of All Sheets"
-    Cells(1, 3).Value = "Link to Each Sheets"
-    Cells(1, 4).Value = "Sheet Locked ?"
-    Cells(1, 5).Value = "Sheet Hided ?"
-    Cells(1, 6).Value = "Sheet Status Reserved_01"
-    Cells(1, 7).Value = "Sheet Status Reserved_02"
-    Cells(1, 8).Value = "Comments"
+    Cells(1, COL_NR).Value = "Nr."
+    Cells(1, COL_SHEET_NAME).Value = "Index of All Sheets"
+    Cells(1, COL_SHEET_LINK).Value = "Link to Each Sheets"
+    Cells(1, COL_SHEET_EMPTY).Value = "Sheet w/ Contents ?"
+    Cells(1, COL_SHEET_LOCKED).Value = "Sheet Locked ?"
+    Cells(1, COL_SHEET_HIDDEN).Value = "Sheet Hided ?"
+    Cells(1, COL_RESERVED_01).Value = "Sheet Status Reserved_01"
+    Cells(1, COL_RESERVED_02).Value = "Sheet Status Reserved_02"
+    Cells(1, COL_COMMENTS).Value = "Comments"
 
-    With Range("A1:H1")
+    With Range("A1:I1")
         .Interior.Color = RGB(181, 181, 181)
         .Font.Bold = True
     End With
@@ -76,48 +100,61 @@ For j = 1 To nCountofSheets
     Set shtEachSheet = Sheets(j + 1)
 
     'Start from the 2nd Rows
-    Cells(j + 1, 1).Value = j
-    Cells(j + 1, 2).Value = strSheetsNameList(j)
-    'Cells(j + 1, 3).Value will be operated below.
-    'Cells(j + 1, 4).Value will be operated below.
-    'Cells(j + 1, 5).Value will be operated below.
-    
-    'Cells(j + 1, 6).Value = "Reserved"
-    'Cells(j + 1, 7).Value = "Reserved"
-    'Cells(j + 1, 8).Value = "Reserved"
+    Cells(j + 1, COL_NR).Value = j
+    Cells(j + 1, COL_SHEET_NAME).Value = strSheetsNameList(j)
+
+    'Cells(j + 1, COL_RESERVED_01).Value = "Reserved"
+    'Cells(j + 1, COL_RESERVED_02).Value = "Reserved"
     
     '---------------------------------------------
-    'Cells(j + 1, 3).Value was operated along with each other sheet.
-    shtIndexofAllSheets.Hyperlinks.Add Anchor:=Cells(j + 1, 3), _
+    'Cells(j + 1, COL_SHEET_LINK).Value was operated along with each other sheet.
+    shtIndexofAllSheets.Hyperlinks.Add Anchor:=Cells(j + 1, COL_SHEET_LINK), _
                             Address:="", _
                             SubAddress:="'" & strSheetsNameList(j) & "'" & "!A1", _
                             ScreenTip:="Click to Go to the Sheet", _
                             TextToDisplay:="Link to " & shtEachSheet.Name
+
+'---------------------------------------------
+'Check if each sheet is protected/locked, hidden, and empty.
     
     If shtEachSheet.ProtectContents = True Then
         bIfSheetProtected = True
         shtEachSheet.Unprotect
-        Cells(j + 1, 4).Value = "Y"
+        Cells(j + 1, COL_SHEET_LOCKED).Value = "Y"
     End If
 
+
+    If WorksheetFunction.CountA(shtEachSheet.Cells) <= 4 Then
+        bIfSheetEmpty = True
+        Cells(j + 1, COL_SHEET_EMPTY).Value = ""
+    Else
+        Cells(j + 1, COL_SHEET_EMPTY).Value = "Y"
+    End If
+    
     If shtEachSheet.Visible = False Then
         'bIfSheetHided = True
-        Cells(j + 1, 5).Value = "Y"
-        Range(Cells(j + 1, 1), Cells(j + 1, ColLast)).Font.Color = RGB(181, 181, 181)
+        Cells(j + 1, COL_SHEET_HIDDEN).Value = "Y"
+        Range(Cells(j + 1, COL_NR), Cells(j + 1, ColLast)).Font.Color = RGB(181, 181, 181)
         
     End If
 
-    If shtEachSheet.Cells(1, 1).Value = "" Then
-        shtEachSheet.Cells(1, 1).Value = "Click to Index of Sheet"
+'---------------------------------------------
+'Add Link on A1 of each sheet, for quick go back to sheet of Index.
+
+    If shtEachSheet.Cells(1, COL_NR).Value = "" Then
+        shtEachSheet.Cells(1, COL_NR).Value = "Click to Index of Sheet"
     End If
     
-    shtIndexofAllSheets.Hyperlinks.Add Anchor:=shtEachSheet.Cells(1, 1), _
+    shtIndexofAllSheets.Hyperlinks.Add Anchor:=shtEachSheet.Cells(1, COL_NR), _
                                 Address:="", _
                                 SubAddress:="'" & strIndexSheetName & "'" & "!A1", _
                                 ScreenTip:="Go Back to First Sheet of Index", _
-                                TextToDisplay:=shtEachSheet.Cells(1, 1).Value
+                                TextToDisplay:=Application.Text(shtEachSheet.Cells(1, COL_NR).Value, "0")
+                                'If the Contents of A1 is a Number, then convert to Text.
+'                                TextToDisplay:=shtEachSheet.Cells(1, 1).Value
 
-    With shtEachSheet.Cells(1, 1)
+
+    With shtEachSheet.Cells(1, COL_NR)
             
             .Font.Color = vbBlue
             .Font.Underline = True
@@ -139,6 +176,9 @@ For j = 1 To nCountofSheets
     
 Next j
 
+'---------------------------------------------
+'Format the Cell Grid Line, Font, Width for better reading.
+
 With ActiveSheet.UsedRange
 
     .Borders.LineStyle = xlContinuous
@@ -157,10 +197,11 @@ End With
 
 Rows.AutoFit
 Columns.AutoFit
-Columns(2).ColumnWidth = Columns(2).ColumnWidth * 1.1
-Columns(3).ColumnWidth = Columns(3).ColumnWidth * 1.2
-Columns(4).HorizontalAlignment = xlCenter
-Columns(5).HorizontalAlignment = xlCenter
+Columns(COL_SHEET_NAME).ColumnWidth = Columns(COL_SHEET_NAME).ColumnWidth * 1.1
+Columns(COL_SHEET_LINK).ColumnWidth = Columns(COL_SHEET_LINK).ColumnWidth * 1.2
+Columns(COL_SHEET_EMPTY).HorizontalAlignment = xlCenter
+Columns(COL_SHEET_LOCKED).HorizontalAlignment = xlCenter
+Columns(COL_SHEET_HIDDEN).HorizontalAlignment = xlCenter
 
 Set shtIndexofAllSheets = Nothing
 
@@ -188,8 +229,7 @@ End Sub
 '
 'End Sub
 
-'----------------------------------------
-'Below Modules are references.
+
 'Sub CreateIndex()
 ''updateby Extendoffice
 ''https://www.extendoffice.com/documents/excel/572-excel-list-worksheet-names.html
@@ -244,3 +284,4 @@ End Sub
 '    End With
 '
 'End Sub
+''
