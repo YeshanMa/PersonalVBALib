@@ -1,4 +1,4 @@
-Attribute VB_Name = "wdSUB_CodeRepository"
+'Attribute VB_Name = "wdSUB_CodeRepository"
 Sub HighlightWords()
 
     Dim dbs As DAO.Database
