@@ -35,10 +35,13 @@ Dim shtEachSheet As Worksheet
 Dim bIfSheetProtected As Boolean
 Dim bIfSheetHided As Boolean
 Dim bIfSheetEmpty As Boolean
+Dim bIfSheetContainsImage As Boolean
 
 bIfSheetProtected = False
 bIfSheetHided = False
 bIfSheetEmpty = False
+bIfSheetContainsImage = False
+
 
 Const COL_NR As Integer = 1
 Const COL_SHEET_NAME As Integer = 2
@@ -124,16 +127,21 @@ For j = 1 To nCountofSheets
     End If
 
 
-    If WorksheetFunction.CountA(shtEachSheet.Range("A2:AA20").Cells) <= 3 Then
-        bIfSheetEmpty = True
-        Cells(j + 1, COL_SHEET_EMPTY).Value = ""
-    Else
+    bIfSheetContainsImage = CheckActShtContainsImage(shtEachSheet)
+    
+    If bIfSheetContainsImage = True Or WorksheetFunction.CountA(shtEachSheet.Range("A2:H200").Cells) >= 5 Then
+    
         Cells(j + 1, COL_SHEET_EMPTY).Value = "Y"
        
         Rows(j + 1).Font.Color = RGB(0, 0, 255)
         Rows(j + 1).Font.Bold = True
-                
+     
+    Else
+        bIfSheetEmpty = True
+        'Cells(j + 1, COL_SHEET_EMPTY).Value = ""
+    
     End If
+    
     
     If shtEachSheet.Visible = False Then
         'bIfSheetHided = True
@@ -202,7 +210,7 @@ End With
 Rows.AutoFit
 Columns.AutoFit
 Columns(COL_SHEET_NAME).ColumnWidth = Columns(COL_SHEET_NAME).ColumnWidth * 1.1
-Columns(COL_SHEET_LINK).ColumnWidth = Columns(COL_SHEET_LINK).ColumnWidth * 1.2
+Columns(COL_SHEET_LINK).ColumnWidth = Columns(COL_SHEET_LINK).ColumnWidth * 1.1
 Columns(COL_SHEET_EMPTY).HorizontalAlignment = xlCenter
 Columns(COL_SHEET_LOCKED).HorizontalAlignment = xlCenter
 Columns(COL_SHEET_HIDDEN).HorizontalAlignment = xlCenter
