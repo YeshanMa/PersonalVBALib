@@ -124,11 +124,15 @@ For j = 1 To nCountofSheets
     End If
 
 
-    If WorksheetFunction.CountA(shtEachSheet.Cells) <= 4 Then
+    If WorksheetFunction.CountA(shtEachSheet.Range("A2:AA20").Cells) <= 3 Then
         bIfSheetEmpty = True
         Cells(j + 1, COL_SHEET_EMPTY).Value = ""
     Else
         Cells(j + 1, COL_SHEET_EMPTY).Value = "Y"
+       
+        Rows(j + 1).Font.Color = RGB(0, 0, 255)
+        Rows(j + 1).Font.Bold = True
+                
     End If
     
     If shtEachSheet.Visible = False Then
@@ -285,3 +289,5 @@ End Sub
 '
 'End Sub
 ''
+
+
