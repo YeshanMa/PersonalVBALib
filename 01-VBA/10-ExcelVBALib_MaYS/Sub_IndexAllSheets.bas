@@ -127,8 +127,15 @@ For j = 1 To nCountofSheets
     End If
 
 
+    If shtEachSheet.Visible = False Then
+        'bIfSheetHided = True
+        Cells(j + 1, COL_SHEET_HIDDEN).Value = "Y"
+        Range(Cells(j + 1, COL_NR), Cells(j + 1, ColLast)).Font.Color = RGB(181, 181, 181)
+        
+    End If
+
+
     bIfSheetContainsImage = CheckActShtContainsImage(shtEachSheet)
-    
     If bIfSheetContainsImage = True Or WorksheetFunction.CountA(shtEachSheet.Range("A2:H200").Cells) >= 5 Then
     
         Cells(j + 1, COL_SHEET_EMPTY).Value = "Y"
@@ -140,14 +147,6 @@ For j = 1 To nCountofSheets
         bIfSheetEmpty = True
         'Cells(j + 1, COL_SHEET_EMPTY).Value = ""
     
-    End If
-    
-    
-    If shtEachSheet.Visible = False Then
-        'bIfSheetHided = True
-        Cells(j + 1, COL_SHEET_HIDDEN).Value = "Y"
-        Range(Cells(j + 1, COL_NR), Cells(j + 1, ColLast)).Font.Color = RGB(181, 181, 181)
-        
     End If
 
 '---------------------------------------------
