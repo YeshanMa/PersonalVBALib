@@ -1,16 +1,16 @@
-'Attribute VB_Name = "Sub_MSTranslatorAutoScript"
 Public Declare PtrSafe Sub Sleep Lib "kernel32" (ByVal dwMilliseconds As LongPtr)
 Option Explicit
-Public sDetectedLanguageCode
+Public sDetectedLanguageCode_From
+Public sDetectedLanguageCode_To
 
 Public Sub MSTranslatorScript()
 '
 ' AutoTranslator Macro, by MaYS.
 
-' Ver 3.5, 19-Jan-2021
+' Ver 3.6, 20-Apr-2021
 ' Latest Update:
-            '1. Improve the Strategy both check Nr. of Requests and Total Length of Chrs to avoid be Rejected but not only wait for 2000, and also for When to Save Workbook
-            '2. Add Status Bar and Process Bar to display more information
+            '1. Add sLanguageCode_From sLanguageCode_To to allow to Translate to Languge other than EN.
+            '2. Translate to EN is still default if sLanguageCode_To is empty
 ' To be Update:
             '1. Clean the error value before Translating (e.g. "#NAME", "#VALUE", etc..)
             '2. Use Regular Expression for better Duplicated / Redudant Text Remove, e.g. Safety Questions, Empty Lines, etc...
@@ -30,8 +30,9 @@ Public Sub MSTranslatorScript()
 Dim UnTranslatedTextOrginal As String
 Dim UnTranslatedTextSubstitued As String 'Replace the special characters: " \ / in the Original Text
 
-Dim LanguageCode As String
-Dim DetectedLanguageCode As String
+Dim LanguageCode_From As String
+Dim LanguageCode_To As String
+Dim DetectedLanguageCode_From As String
 
 Const REQUEST_INTERVAL_TIME As Integer = 2000
 'Change 2000 since Ver 3.4, for seems every 8 ~ 12 Requests, the server will reject new requests for Error of:
@@ -96,7 +97,7 @@ IfTranlateTextRangeIsEmpty = True
 
 For Each RangeforTranslate In RangeforTranslate
 
-    If IsEmpty(RangeforTranslate.Offset(0, -2)) = False Then
+    If IsEmpty(RangeforTranslate.Offset(0, -3)) = False Then
     
         IfTranlateTextRangeIsEmpty = False
         Exit For
@@ -106,7 +107,7 @@ For Each RangeforTranslate In RangeforTranslate
 Next RangeforTranslate
 
 If IfTranlateTextRangeIsEmpty = True Then
-    Call MsgBox("Please Select Correct Column." & vbCrLf & vbCrLf & "Column of Text to be Translated and Column of LanguageCode" & vbCrLf & "shall be on the Left of the Selected Column.", vbOKOnly, "Wrong Range Selected")
+    Call MsgBox("Please Select Correct Column." & vbCrLf & vbCrLf & "Column of Text to be Translated and Column of LanguageCode_From" & vbCrLf & "shall be on the Left of the Selected Column.", vbOKOnly, "Wrong Range Selected")
     Exit Sub
 End If
 
@@ -124,16 +125,16 @@ With RangeforTranslate
 '------------------------------------------------------
 'Check if select the wrong range and check if Language code is valid
 
-If Len(.Offset(0, -2).Value) < 2 Then
+If Len(.Offset(0, -3).Value) < 2 Then
     
-    .Offset(0, 1).Value = .Offset(0, -2).Value
+    .Offset(0, 1).Value = .Offset(0, -3).Value
     .Value = "No Text for Translation"
 
-    'Call MsgBox("Please Select Correct Column." & vbCrLf & vbCrLf & "Column of Text to be Translated and Column of LanguageCode" & vbCrLf & "shall be on the Left of the Selected Column.", vbOKOnly, "Wrong Range Selected")
+    'Call MsgBox("Please Select Correct Column." & vbCrLf & vbCrLf & "Column of Text to be Translated and Column of LanguageCode_From" & vbCrLf & "shall be on the Left of the Selected Column.", vbOKOnly, "Wrong Range Selected")
     'Exit Sub
     'Not Exit Sub since Ver3.3, display a Message in this Cell and continue with Next Cells
     
-ElseIf Len(.Offset(0, -1).Value) > 2 Then
+ElseIf Len(.Offset(0, -2).Value) > 2 Then
     'Try use enumeration variable to list all legal Langua Code in Next Version
     .Value = "Wrong Language Code"
     .Interior.Color = RGB(255, 217, 102)
@@ -146,9 +147,10 @@ Else
 '------------------------------------------------------
 'Text for translation and language Code is ok, Start Translation procedure then.
 
-    LanguageCode = .Offset(0, -1).Value
-    
-    UnTranslatedTextOrginal = .Offset(0, -2).Value
+    LanguageCode_From = .Offset(0, -2).Value
+    LanguageCode_To = .Offset(0, -1).Value
+
+    UnTranslatedTextOrginal = .Offset(0, -3).Value
 
     UnTranslatedTextOrginal = Replace(Expression:=UnTranslatedTextOrginal, Find:="\t", Replace:="vbCrlf")
 
@@ -178,7 +180,7 @@ Else
 
     If Len(UnTranslatedTextSubstitued) < MAX_CHAR_LIMIT_PER_REQUEST Then
     
-        TranslatedText = MSTranslate(UnTranslatedTextSubstitued, LanguageCode)
+        TranslatedText = MSTranslate(UnTranslatedTextSubstitued, LanguageCode_From, LanguageCode_To)
 '        Debug.Print TranslatedText
         DoEvents
         'Sleep in MSTranslator Function depending on the length of the Text, No sleep in Script since V3.5
@@ -204,7 +206,7 @@ Else
             
             LongTextSegmented(i) = VBA.Mid(UnTranslatedTextSubstitued, nSegementStartPos, MAX_CHAR_LIMIT_PER_REQUEST)
             'Debug.Print LongTextSegmented(i)
-            TranslatedLongTextSegmented(i) = MSTranslate(LongTextSegmented(i), LanguageCode)
+            TranslatedLongTextSegmented(i) = MSTranslate(LongTextSegmented(i), LanguageCode_From, LanguageCode_To)
             
             DoEvents
 
@@ -227,7 +229,7 @@ Else
 
         LongTextSegmented1 = VBA.Mid(UnTranslatedTextSubstitued, 1, 500)
 
-        TranslatedText = MSTranslate(LongTextSegmented1, LanguageCode)
+        TranslatedText = MSTranslate(LongTextSegmented1, LanguageCode_From, LanguageCode_To)
         DoEvents
         
         TranslatedLongTextCombined = TranslatedText & vbCrLf & "---------------------" & vbCrLf & _
@@ -244,9 +246,9 @@ Else
 
     If InStr(1, TranslatedText, "Language Detected:") > 0 Then
 
-        DetectedLanguageCode = VBA.Mid(TranslatedText, InStr(1, TranslatedText, "Language Detected:") + 18, 2)
+        DetectedLanguageCode_From = VBA.Mid(TranslatedText, InStr(1, TranslatedText, "Language Detected:") + 18, 2)
         
-        .Offset(0, 2).Value = DetectedLanguageCode 'Copy Detected LanguageCode to 2nd Column to the right
+        .Offset(0, 2).Value = DetectedLanguageCode_From 'Copy Detected LanguageCode_From to 2nd Column to the right
         .Offset(0, 1).Value = VBA.Mid(TranslatedTextLineBreaked, 49) ' Copy the Text to 1st Column to the right
 
 '        Debug.Print TranslatedTextLineBreaked
@@ -318,6 +320,15 @@ Application.StatusBar = False
 End Sub
 
 
+' Ver 3.5, 19-Jan-2021
+' Latest Update:
+            '1. Improve the Strategy both check Nr. of Requests and Total Length of Chrs to avoid be Rejected but not only wait for 2000, and also for When to Save Workbook
+            '2. Add Status Bar and Process Bar to display more information
+' To be Update:
+            '1. Clean the error value before Translating (e.g. "#NAME", "#VALUE", etc..)
+            '2. Use Regular Expression for better Duplicated / Redudant Text Remove, e.g. Safety Questions, Empty Lines, etc...
+            
+
 ' Ver 3.4, 12-Jan-2021
 ' Latest Update: Change MAX_CHAR_LIMIT_PER_REQUEST to 2900; Disable Warp Text for each row; change the interval time from 200 to 2000.
 ' TobeUpdate:
@@ -334,6 +345,8 @@ End Sub
 ' Ver 3.2, 09-Dec-2020
 ' Latest Update: Not allowed to translated in Wrong Cell or Range, and if with wrong language Code
 ' TobeUpdate: Inputbox for InputAuthenticationCode, not work with Error:This method cannot be called after the sent method has been called
+
+
 
 
 

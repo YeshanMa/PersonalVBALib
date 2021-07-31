@@ -1,7 +1,6 @@
-'Attribute VB_Name = "Func_MSAzureTranslator"
 Public Declare PtrSafe Sub Sleep Lib "kernel32" (ByVal dwMilliseconds As LongPtr)
 
-Public Function MSTranslate(sText As String, sLanguageFrom As String)
+Public Function MSTranslate(sText As String, sLanguageFrom As String, Optional sLanguageTo As String)
 
 Const AUTHENTICATION_FAIL As String = "credentials are missing"
 Const TRANSLATION_ERROR As String = "error"":{""code"":40"
@@ -29,6 +28,7 @@ Dim nLengthofRawTranslatedsText As Long
 
 Dim sDetectedLanguageCode As String
 
+If sLanguageTo = "" Then sLanguageTo = "en"
 
 '---Sub Procedure Start---
 
@@ -42,14 +42,14 @@ If Len(sText) > 0 Then 'if blank do nothing return the blank value
     End If
     
     sRegion = "eastus"
-    sAuthenticationKey = "##############" 'authentication Key from subscription, used on 09Dec, @outlook.com
+    sAuthenticationKey = "7d53c79bfbf044339712e46c579fae96" 'authentication Key from subscription, used on 09Dec, @outlook.com
     
     If Len(sAuthenticationKey) < 10 Then
     sAuthenticationKey = InputBox("Please input Authentication Code", "Input Authentication Code")
     End If
     
     sHostUrl = "https://api.cognitive.microsofttranslator.com/translate?api-version=3.0" 'required link for authentication
-    sHostUrl = sHostUrl & "&from=" & sLanguageFrom & "&to=en" 'determine languagefrom and langauge to
+    sHostUrl = sHostUrl & "&from=" & sLanguageFrom & "&to=" & sLanguageTo 'determine languagefrom and langauge to
 
     sTextforPOST = "[{""text"":" & """" & sText & """}]" 'JSON format spcific requirement [{"text":"value"}] max5000 characters
     'JSON format spcific requirement [{"text":"value"}] max5000 characters
