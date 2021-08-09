@@ -5,6 +5,9 @@ Public ColLast As Long
 Public Sub IndexAllSheets()
 ' Macro to list the Index of All sheets in this Excel Workbook, by MaYS.
 
+' Ver 1.2, 05-Aug-2021
+' Improve Row Format for Protected/Hidden/Sheet with Contents.
+
 ' Ver 1.1, 27-Jul-2021
 ' Add Indicator of If the Workbook is empty on the Index Sheet
 ' Fix errors when add Link when the A1 content is Number
@@ -127,45 +130,52 @@ For j = 1 To nCountofSheets
     End If
 
 
-    If shtEachSheet.Visible = False Then
-        'bIfSheetHided = True
-        Cells(j + 1, COL_SHEET_HIDDEN).Value = "Y"
-        Range(Cells(j + 1, COL_NR), Cells(j + 1, ColLast)).Font.Color = RGB(181, 181, 181)
-        
-    End If
-
-
     bIfSheetContainsImage = CheckActShtContainsImage(shtEachSheet)
     If bIfSheetContainsImage = True Or WorksheetFunction.CountA(shtEachSheet.Range("A2:H200").Cells) >= 5 Then
     
         Cells(j + 1, COL_SHEET_EMPTY).Value = "Y"
        
-        Rows(j + 1).Font.Color = RGB(0, 0, 255)
+        Rows(j + 1).Font.Color = vbBlue
         Rows(j + 1).Font.Bold = True
      
     Else
+    
         bIfSheetEmpty = True
         'Cells(j + 1, COL_SHEET_EMPTY).Value = ""
+        Rows(j + 1).Font.Color = vbBlack
+        Rows(j + 1).Font.Bold = False
+                
+    End If
     
+    
+    If shtEachSheet.Visible = False Then
+        'bIfSheetHided = True
+        Cells(j + 1, COL_SHEET_HIDDEN).Value = "Y"
+        
+        Range(Cells(j + 1, COL_NR), Cells(j + 1, ColLast)).Font.Color = RGB(181, 181, 181)
+        Rows(j + 1).Font.Color = RGB(181, 181, 181)
+        Rows(j + 1).Font.Bold = False
+        
     End If
 
 '---------------------------------------------
 'Add Link on A1 of each sheet, for quick go back to sheet of Index.
 
-    If shtEachSheet.Cells(1, COL_NR).Value = "" Then
-        shtEachSheet.Cells(1, COL_NR).Value = "Click to Index of Sheet"
-    End If
+'    If shtEachSheet.Cells(1, 1).Value = "" Then
+'        shtEachSheet.Cells(1, 1).Value = "Click to Index of Sheet"
+'    End If
     
-    shtIndexofAllSheets.Hyperlinks.Add Anchor:=shtEachSheet.Cells(1, COL_NR), _
-                                Address:="", _
-                                SubAddress:="'" & strIndexSheetName & "'" & "!A1", _
-                                ScreenTip:="Go Back to First Sheet of Index", _
-                                TextToDisplay:=Application.Text(shtEachSheet.Cells(1, COL_NR).Value, "0")
+'    shtIndexofAllSheets.Hyperlinks.Add Anchor:=shtEachSheet.Cells(1, 1), _
+'                                Address:="", _
+'                                SubAddress:="'" & strIndexSheetName & "'" & "!A1", _
+'                                ScreenTip:="Go Back to First Sheet of Index", _
+'                                TextToDisplay:=Application.Text(shtEachSheet.Cells(1, 1).Value, "0")
+                                
                                 'If the Contents of A1 is a Number, then convert to Text.
 '                                TextToDisplay:=shtEachSheet.Cells(1, 1).Value
 
 
-    With shtEachSheet.Cells(1, COL_NR)
+    With shtEachSheet.Cells(1, 1)
             
             .Font.Color = vbBlue
             .Font.Underline = True
