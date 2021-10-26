@@ -5,8 +5,8 @@ Public ColLast As Long
 Public Sub IndexAllSheets()
 ' Macro to list the Index of All sheets in this Excel Workbook, by MaYS.
 
-' Ver 1.2, 05-Aug-2021
-' Improve Row Format for Protected/Hidden/Sheet with Contents.
+' Ver 1.2, 26-Oct-2021
+' Add check if sheet contains ChartsObjects
 
 ' Ver 1.1, 27-Jul-2021
 ' Add Indicator of If the Workbook is empty on the Index Sheet
@@ -39,6 +39,7 @@ Dim bIfSheetProtected As Boolean
 Dim bIfSheetHided As Boolean
 Dim bIfSheetEmpty As Boolean
 Dim bIfSheetContainsImage As Boolean
+Dim bIfSheetContainsChart As Boolean
 
 bIfSheetProtected = False
 bIfSheetHided = False
@@ -131,7 +132,9 @@ For j = 1 To nCountofSheets
 
 
     bIfSheetContainsImage = CheckActShtContainsImage(shtEachSheet)
-    If bIfSheetContainsImage = True Or WorksheetFunction.CountA(shtEachSheet.Range("A2:H200").Cells) >= 5 Then
+    bIfSheetContainsChart = CheckActShtContainsChart(shtEachSheet)
+    
+    If bIfSheetContainsImage Or bIfSheetContainsChart Or WorksheetFunction.CountA(shtEachSheet.Range("A2:H200").Cells) >= 5 Then
     
         Cells(j + 1, COL_SHEET_EMPTY).Value = "Y"
        
