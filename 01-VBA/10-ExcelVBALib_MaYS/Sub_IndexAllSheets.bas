@@ -5,17 +5,16 @@ Public ColLast As Long
 Public Sub IndexAllSheets()
 ' Macro to list the Index of All sheets in this Excel Workbook, by MaYS.
 
-' Ver 1.2, 26-Oct-2021
-' Add check if sheet contains ChartsObjects
+' Ver 1.0.2, 20-Oct-2021
+' Add optional parameters for sheet protection
 
-' Ver 1.1, 27-Jul-2021
+' Ver 1.0.1, 27-Oct-2021
 ' Add Indicator of If the Workbook is empty on the Index Sheet
 ' Fix errors when add Link when the A1 content is Number
 
-' Ver 1.0, 14-Dec-2020
+' Ver 1.0.0, 14-Dec-2020
 ' 1st Version
 ' https://www.thesmallman.com/blog/2020/4/16/list-all-sheets-in-a-excel-workbook
-
 
 '---------------------------------------------
 'Define Variables for how many sheets in the Workbook
@@ -161,21 +160,19 @@ For j = 1 To nCountofSheets
         
     End If
 
-'---------------------------------------------
-'Add Link on A1 of each sheet, for quick go back to sheet of Index.
+'    ---------------------------------------------
+'    Add Link on A1 of each sheet, for quick go back to sheet of Index.
 
-'    If shtEachSheet.Cells(1, 1).Value = "" Then
-'        shtEachSheet.Cells(1, 1).Value = "Click to Index of Sheet"
-'    End If
+    If shtEachSheet.Cells(1, 1).Value = "" Then
+        shtEachSheet.Cells(1, 1).Value = "Click to Index of Sheet"
+    End If
     
-'    shtIndexofAllSheets.Hyperlinks.Add Anchor:=shtEachSheet.Cells(1, 1), _
-'                                Address:="", _
-'                                SubAddress:="'" & strIndexSheetName & "'" & "!A1", _
-'                                ScreenTip:="Go Back to First Sheet of Index", _
-'                                TextToDisplay:=Application.Text(shtEachSheet.Cells(1, 1).Value, "0")
-                                
-                                'If the Contents of A1 is a Number, then convert to Text.
-'                                TextToDisplay:=shtEachSheet.Cells(1, 1).Value
+    shtIndexofAllSheets.Hyperlinks.Add Anchor:=shtEachSheet.Cells(1, 1), _
+                                Address:="", _
+                                SubAddress:="'" & strIndexSheetName & "'" & "!A1", _
+                                ScreenTip:="Go Back to First Sheet of Index", _
+                                TextToDisplay:=Application.Text(shtEachSheet.Cells(1, 1).Value, "0")    'If the Contents of A1 is a Number, then convert to Text.
+'                                TextToDisplay:=shtEachSheet.Cells(1, 1).Value                          'Note that there should be no null line or line of comments between the parameters
 
 
     With shtEachSheet.Cells(1, 1)
@@ -189,7 +186,16 @@ For j = 1 To nCountofSheets
     'Lock and Hide the Sheet Again
 
     If bIfSheetProtected = True Then
-        shtEachSheet.Protect
+
+'https://www.educba.com/vba-protect-sheet/
+'        shtEachSheet.Protect Password:=strPassword, DrawingObjects:=True, Contents:=True, Scenarios:=True, _
+'        UserInterfaceOnly:=True, AllowFormattingCells:=False, AllowFormattingColumns:=False, _
+'        AllowFormattingRows:=False, AllowInsertingColumns:=False, AllowInsertingRows:=False, _
+'        AllowInsertingHyperlinks:=False, AllowDeletingColumns:=False, AllowDeletingRows:=False, _
+'        AllowSorting:=False, AllowFiltering:=False, AllowUsingPivotTables:=False
+        
+        shtEachSheet.Protect AllowFormattingCells:=True, AllowFormattingColumns:=True, AllowFormattingRows:=True, _
+                                AllowInsertingColumns:=True, AllowSorting:=True, AllowFiltering:=True
         bIfSheetProtected = False
     
     ' ElseIf bIfSheetHided = True Then
