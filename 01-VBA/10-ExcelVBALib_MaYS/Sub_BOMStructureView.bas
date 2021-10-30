@@ -3,7 +3,7 @@ Sub BOMStructureView()
 'This Macro process a BOM file with automatic Grouping with BOM Levels, Mark and indent for each level, for easy reading and find specific level of parts.
 'Author: Ma Yeshan, yeshan.ma@outlook.com
 
-'Ver 2.0, 12-Jan-2020
+'Ver 1.0.2, 12-Jan-2020
 
 'Latest Update: Not allowed to translated in Wrong Cell or Range, and if with wrong language Code
 'TobeUpdate in Next Version:
@@ -12,8 +12,6 @@ Sub BOMStructureView()
         '2. Adjust the BOM Level 2 Color for more conspicuous
 
 'Earlier History and Release Notes see the end of the Sub.
-
-
 
 'Define Colors for each BOM Level
 Dim BOM_LEVEL_COLOR_0 As Long

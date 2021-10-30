@@ -7,7 +7,7 @@ Public Sub MSTranslatorScript()
 '
 ' AutoTranslator Macro, by MaYS.
 
-' Ver 3.6, 20-Apr-2021
+' Ver 1.0.6, 20-Apr-2021
 ' Latest Update:
             '1. Add sLanguageCode_From sLanguageCode_To to allow to Translate to Languge other than EN.
             '2. Translate to EN is still default if sLanguageCode_To is empty
@@ -320,7 +320,7 @@ Application.StatusBar = False
 End Sub
 
 
-' Ver 3.5, 19-Jan-2021
+' Ver 1.0.5, 19-Jan-2021
 ' Latest Update:
             '1. Improve the Strategy both check Nr. of Requests and Total Length of Chrs to avoid be Rejected but not only wait for 2000, and also for When to Save Workbook
             '2. Add Status Bar and Process Bar to display more information
@@ -329,7 +329,7 @@ End Sub
             '2. Use Regular Expression for better Duplicated / Redudant Text Remove, e.g. Safety Questions, Empty Lines, etc...
             
 
-' Ver 3.4, 12-Jan-2021
+' Ver 1.0.4, 12-Jan-2021
 ' Latest Update: Change MAX_CHAR_LIMIT_PER_REQUEST to 2900; Disable Warp Text for each row; change the interval time from 200 to 2000.
 ' TobeUpdate:
             '1. Improve the Strategy both check Nr. of Requests and Total Length of Chrs to avoid be Rejected but not only wait for 2000, and also for When to Save Workbook
@@ -338,15 +338,10 @@ End Sub
             '4. Use Regular Expression for better Duplicated / Redudant Text Remove, e.g. Safety Questions, Empty Lines, etc...
             
 
-' Ver 3.3, 14-Dec-2020
+' Ver 1.0.3, 14-Dec-2020
 ' Inputbox for InputAuthenticationCode now works since Ver 3.3, but was disabled that not used.
 ' TobeUpdate:
 
-' Ver 3.2, 09-Dec-2020
+' Ver 1.0.2, 09-Dec-2020
 ' Latest Update: Not allowed to translated in Wrong Cell or Range, and if with wrong language Code
 ' TobeUpdate: Inputbox for InputAuthenticationCode, not work with Error:This method cannot be called after the sent method has been called
-
-
-
-
-
